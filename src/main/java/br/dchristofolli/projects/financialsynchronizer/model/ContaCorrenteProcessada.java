@@ -7,6 +7,17 @@ public class ContaCorrenteProcessada {
     String status;
     boolean atualizar;
 
+    @Override
+    public String toString() {
+        return "ContaCorrenteProcessada{" +
+                "agencia='" + agencia + '\'' +
+                ", conta='" + conta + '\'' +
+                ", saldo=" + saldo +
+                ", status='" + status + '\'' +
+                ", atualizar=" + atualizar +
+                '}';
+    }
+
     public ContaCorrenteProcessada(String agencia, String conta, double saldo, String status, boolean atualizar) {
         this.agencia = agencia;
         this.conta = conta;
