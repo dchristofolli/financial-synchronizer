@@ -1,6 +1,6 @@
 package br.dchristofolli.projects.financialsynchronizer.service;
 
-import br.dchristofolli.projects.financialsynchronizer.model.ContaCorrente;
+import br.dchristofolli.projects.financialsynchronizer.model.ContaCorrenteEnviada;
 import com.opencsv.bean.CsvToBeanBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,23 +18,44 @@ import java.util.Objects;
 @Service
 @EnableScheduling
 public class CsvService {
+    private final ReceitaService receitaService;
+    private final Logger logger = LoggerFactory.getLogger(CsvService.class.getName());
+
+    public CsvService(ReceitaService receitaService) {
+        this.receitaService = receitaService;
+    }
 
     @Scheduled(fixedDelay = 1000)
-    private void csvReader() {
-        Logger logger = LoggerFactory.getLogger(CsvService.class.getName());
+    private void run() {
+        csvReader()
+                .forEach(c -> logger.info(String.valueOf(c)));
+    }
+
+    private List<ContaCorrenteEnviada> csvReader() {
         Reader reader = null;
         try {
             reader = Files.newBufferedReader(Paths.get("sample.csv"));
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
-        List<ContaCorrente> csv = new CsvToBeanBuilder<ContaCorrente>(Objects.requireNonNull(reader))
-                .withType(ContaCorrente.class)
+        return new CsvToBeanBuilder<ContaCorrenteEnviada>(Objects.requireNonNull(reader))
+                .withType(ContaCorrenteEnviada.class)
                 .withEscapeChar(',')
                 .withSeparator(';')
-                .build()
-                .parse();
-        csv.parallelStream()
-                .forEach(c -> logger.info(String.valueOf(c)));
+                .build().parse();
+    }
+
+    public boolean processing(ContaCorrenteEnviada conta) {
+        boolean atualizar = false;
+        try {
+            atualizar = receitaService.atualizarConta(
+                    conta.getAgencia(),
+                    conta.getConta(),
+                    conta.getSaldo(),
+                    conta.getStatus());
+        } catch (InterruptedException e) {
+            logger.error(e.getMessage());
+        }
+        return atualizar;
     }
 }

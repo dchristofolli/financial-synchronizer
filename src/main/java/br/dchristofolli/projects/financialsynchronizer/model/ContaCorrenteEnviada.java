@@ -3,7 +3,7 @@ package br.dchristofolli.projects.financialsynchronizer.model;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ContaCorrente {
+public class ContaCorrenteEnviada {
     String agencia;
     String conta;
     double saldo;
