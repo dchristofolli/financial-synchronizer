@@ -1,1 +1,1 @@
-# financial-sinchronizer
+# financial-synchronizer
