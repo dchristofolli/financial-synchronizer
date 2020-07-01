@@ -28,10 +28,10 @@ public class CsvService {
         this.receitaService = receitaService;
     }
 
-    public List<ContaCorrenteEnviada> csvReader() {
+    public List<ContaCorrenteEnviada> csvReader(String fileName) {
         Reader reader = null;
         try {
-            reader = Files.newBufferedReader(Paths.get("sample.csv"));
+            reader = Files.newBufferedReader(Paths.get(fileName));
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
