@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 public class ContaCorrente {
     String agencia;
     String conta;
-    String saldo;
+    double saldo;
     String status;
 
     @Override
@@ -35,12 +35,12 @@ public class ContaCorrente {
         this.conta = conta;
     }
 
-    public String getSaldo() {
+    public double getSaldo() {
         return saldo;
     }
 
-    public void setSaldo(String saldo) {
-        this.saldo = saldo;
+    public void setSaldo(double saldo) {
+        this.saldo = saldo/100;
     }
 
     public String getStatus() {

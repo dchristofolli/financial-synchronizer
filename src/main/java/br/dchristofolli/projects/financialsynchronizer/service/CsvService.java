@@ -30,8 +30,10 @@ public class CsvService {
         }
         List<ContaCorrente> csv = new CsvToBeanBuilder<ContaCorrente>(Objects.requireNonNull(reader))
                 .withType(ContaCorrente.class)
+                .withEscapeChar(',')
                 .withSeparator(';')
-                .build().parse();
+                .build()
+                .parse();
         csv.parallelStream()
                 .forEach(c -> logger.info(String.valueOf(c)));
     }
