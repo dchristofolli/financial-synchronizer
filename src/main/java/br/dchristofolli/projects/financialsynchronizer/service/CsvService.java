@@ -9,8 +9,6 @@ import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -22,25 +20,15 @@ import java.util.List;
 import java.util.Objects;
 
 @Service
-@EnableScheduling
 public class CsvService {
     private final ReceitaService receitaService;
-    private final Logger logger = LoggerFactory.getLogger(CsvService.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(CsvService.class.getName());
 
     public CsvService(ReceitaService receitaService) {
         this.receitaService = receitaService;
     }
 
-    @Scheduled(fixedDelay = 1000)
-    private void run() {
-        csvReader()
-                .forEach(c -> logger.info(String.valueOf(c)));
-        csvReader().stream()
-                .map(this::processing)
-                .forEach(this::csvWriter);
-    }
-
-    private List<ContaCorrenteEnviada> csvReader() {
+    public List<ContaCorrenteEnviada> csvReader() {
         Reader reader = null;
         try {
             reader = Files.newBufferedReader(Paths.get("sample.csv"));
@@ -73,13 +61,13 @@ public class CsvService {
                 atualizar);
     }
 
-    public void csvWriter(ContaCorrenteProcessada contaCorrenteProcessada) {
+    public void csvWriter(List<ContaCorrenteProcessada> processadas) {
         try {
             Writer writer = Files.newBufferedWriter(Paths.get("processadas.csv"));
             StatefulBeanToCsv<ContaCorrenteProcessada> beanToCsv =
                     new StatefulBeanToCsvBuilder<ContaCorrenteProcessada>(writer)
                             .build();
-            beanToCsv.write(contaCorrenteProcessada);
+            beanToCsv.write(processadas);
             writer.flush();
             writer.close();
         } catch (IOException | CsvDataTypeMismatchException | CsvRequiredFieldEmptyException e) {
