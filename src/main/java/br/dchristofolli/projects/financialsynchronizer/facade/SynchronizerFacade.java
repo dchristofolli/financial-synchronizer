@@ -17,10 +17,10 @@ public class SynchronizerFacade {
 
     public void run(String fileName) {
         csvService.makeDirectory();
-        List<ContaCorrenteProcessada> processadas = csvService.csvReader(fileName)
+        List<ContaCorrenteProcessada> processed = csvService.csvReader(fileName)
                 .stream()
                 .map(csvService::processing)
                 .collect(Collectors.toList());
-        csvService.csvWriter(processadas);
+        csvService.csvWriter(processed);
     }
 }

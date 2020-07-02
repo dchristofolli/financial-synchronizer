@@ -51,26 +51,31 @@ public class CsvService {
                 .withType(ContaCorrenteEnviada.class)
                 .withEscapeChar(',')
                 .withSeparator(';')
-                .build().parse();
+                .build()
+                .parse();
     }
 
-    public ContaCorrenteProcessada processing(ContaCorrenteEnviada conta) {
-        boolean atualizar = false;
+    public ContaCorrenteProcessada processing(ContaCorrenteEnviada account) {
+        boolean update = false;
         try {
-            atualizar = receitaService.atualizarConta(
-                    conta.getAgencia(),
-                    conta.getConta(),
-                    conta.getSaldo(),
-                    conta.getStatus());
+            update = receitaService.atualizarConta(
+                    account.getAgencia(),
+                    account.getConta(),
+                    account.getSaldo(),
+                    account.getStatus());
         } catch (InterruptedException e) {
             logger.error(e.getMessage());
         }
+        return getProcessedAccount(account, update);
+    }
+
+    private ContaCorrenteProcessada getProcessedAccount(ContaCorrenteEnviada account, boolean update) {
         return new ContaCorrenteProcessada(
-                conta.getAgencia(),
-                conta.getConta(),
-                conta.getSaldo(),
-                conta.getStatus(),
-                atualizar);
+                account.getAgencia(),
+                account.getConta(),
+                account.getSaldo(),
+                account.getStatus(),
+                update);
     }
 
     public void makeDirectory() {
@@ -81,20 +86,24 @@ public class CsvService {
         }
     }
 
-    public void csvWriter(List<ContaCorrenteProcessada> processadas) {
+    public void csvWriter(List<ContaCorrenteProcessada> processed) {
         try {
-            Writer writer = Files.newBufferedWriter(Paths.get(
-                    outputDir +
-                            File.separator +
-                            currentTimeMillis() + outputFile));
+            Writer writer = makeFile();
             StatefulBeanToCsv<ContaCorrenteProcessada> beanToCsv =
                     new StatefulBeanToCsvBuilder<ContaCorrenteProcessada>(writer)
                             .build();
-            beanToCsv.write(processadas);
+            beanToCsv.write(processed);
             writer.flush();
             writer.close();
         } catch (IOException | CsvDataTypeMismatchException | CsvRequiredFieldEmptyException e) {
             logger.error(e.getMessage());
         }
+    }
+
+    private Writer makeFile() throws IOException {
+        return Files.newBufferedWriter(Paths.get(
+                outputDir +
+                        File.separator +
+                        currentTimeMillis() + outputFile));
     }
 }
