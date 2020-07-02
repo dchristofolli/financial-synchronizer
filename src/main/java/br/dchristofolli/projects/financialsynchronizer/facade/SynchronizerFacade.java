@@ -16,6 +16,7 @@ public class SynchronizerFacade {
     }
 
     public void run(String fileName) {
+        csvService.makeDirectory();
         List<ContaCorrenteProcessada> processadas = csvService.csvReader(fileName)
                 .stream()
                 .map(csvService::processing)

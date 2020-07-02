@@ -9,19 +9,31 @@ import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Objects;
 
+import static java.lang.System.currentTimeMillis;
+
 @Service
 public class CsvService {
     private final ReceitaService receitaService;
+
+    @Value("${outputFile}")
+    private String outputFile;
+
+    @Value("${outputDir}")
+    private String outputDir;
+
     private static final Logger logger = LoggerFactory.getLogger(CsvService.class.getName());
 
     public CsvService(ReceitaService receitaService) {
@@ -61,9 +73,20 @@ public class CsvService {
                 atualizar);
     }
 
+    public void makeDirectory() {
+        try {
+            Files.createDirectories(Path.of(outputDir));
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+        }
+    }
+
     public void csvWriter(List<ContaCorrenteProcessada> processadas) {
         try {
-            Writer writer = Files.newBufferedWriter(Paths.get("processadas.csv"));
+            Writer writer = Files.newBufferedWriter(Paths.get(
+                    outputDir +
+                            File.separator +
+                            currentTimeMillis() + outputFile));
             StatefulBeanToCsv<ContaCorrenteProcessada> beanToCsv =
                     new StatefulBeanToCsvBuilder<ContaCorrenteProcessada>(writer)
                             .build();
