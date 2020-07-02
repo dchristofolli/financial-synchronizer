@@ -24,9 +24,10 @@ Fazer o build do projeto:
 
 Executar o sistema:
 java -jar .\build\libs\financial-synchronizer-1.0.jar input-sample.csv
+
 O arquivo input-sample.csv contém o exemplo citado na descrição do desafio.
 
-O sistema criará um diretório na raíz do projeto, com o nome "output", no qual serão gerados os arquivos com as contas processadas
+O sistema criará um diretório na raíz do projeto, com o nome "output", no qual serão gerados os arquivos com as contas processadas.
 Exemplo de nome de arquivo gerado: 1593712744816_output.csv
 
 **Importante** Os comandos descritos nesse documento devem ser executados num terminal aberto na pasta raiz do projeto.
