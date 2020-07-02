@@ -1,6 +1,6 @@
 package br.dchristofolli.projects.financialsynchronizer.facade;
 
-import br.dchristofolli.projects.financialsynchronizer.model.ContaCorrenteProcessada;
+import br.dchristofolli.projects.financialsynchronizer.model.ProcessedAccount;
 import br.dchristofolli.projects.financialsynchronizer.service.CsvService;
 import org.springframework.stereotype.Component;
 
@@ -17,7 +17,7 @@ public class SynchronizerFacade {
 
     public void run(String fileName) {
         csvService.makeDirectory();
-        List<ContaCorrenteProcessada> processed = csvService.csvReader(fileName)
+        List<ProcessedAccount> processed = csvService.csvReader(fileName)
                 .stream()
                 .map(csvService::processing)
                 .collect(Collectors.toList());

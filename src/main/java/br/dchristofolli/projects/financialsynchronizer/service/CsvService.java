@@ -1,7 +1,7 @@
 package br.dchristofolli.projects.financialsynchronizer.service;
 
-import br.dchristofolli.projects.financialsynchronizer.model.ContaCorrenteEnviada;
-import br.dchristofolli.projects.financialsynchronizer.model.ContaCorrenteProcessada;
+import br.dchristofolli.projects.financialsynchronizer.model.Account;
+import br.dchristofolli.projects.financialsynchronizer.model.ProcessedAccount;
 import com.opencsv.bean.CsvToBeanBuilder;
 import com.opencsv.bean.StatefulBeanToCsv;
 import com.opencsv.bean.StatefulBeanToCsvBuilder;
@@ -19,7 +19,6 @@ import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Objects;
 
@@ -41,22 +40,22 @@ public class CsvService {
         this.receitaService = receitaService;
     }
 
-    public List<ContaCorrenteEnviada> csvReader(String fileName) {
+    public List<Account> csvReader(String fileName) {
         Reader reader = null;
         try {
             reader = Files.newBufferedReader(Paths.get(fileName));
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
-        return new CsvToBeanBuilder<ContaCorrenteEnviada>(Objects.requireNonNull(reader))
-                .withType(ContaCorrenteEnviada.class)
+        return new CsvToBeanBuilder<Account>(Objects.requireNonNull(reader))
+                .withType(Account.class)
                 .withEscapeChar(',')
                 .withSeparator(';')
                 .build()
                 .parse();
     }
 
-    public ContaCorrenteProcessada processing(ContaCorrenteEnviada account) {
+    public ProcessedAccount processing(Account account) {
         boolean update = false;
         try {
             update = receitaService.atualizarConta(
@@ -70,8 +69,8 @@ public class CsvService {
         return getProcessedAccount(account, update);
     }
 
-    private ContaCorrenteProcessada getProcessedAccount(ContaCorrenteEnviada account, boolean update) {
-        return new ContaCorrenteProcessada(
+    private ProcessedAccount getProcessedAccount(Account account, boolean update) {
+        return new ProcessedAccount(
                 account.getAgencia(),
                 account.getConta(),
                 balanceFormatter(account),
@@ -79,7 +78,7 @@ public class CsvService {
                 update);
     }
 
-    private String balanceFormatter(ContaCorrenteEnviada account) {
+    private String balanceFormatter(Account account) {
         return String.format("%.2f",account.getSaldo()).replace('.', ',');
     }
 
@@ -91,11 +90,11 @@ public class CsvService {
         }
     }
 
-    public void csvWriter(List<ContaCorrenteProcessada> processed) {
+    public void csvWriter(List<ProcessedAccount> processed) {
         try {
             Writer writer = makeFile();
-            StatefulBeanToCsv<ContaCorrenteProcessada> beanToCsv =
-                    new StatefulBeanToCsvBuilder<ContaCorrenteProcessada>(writer)
+            StatefulBeanToCsv<ProcessedAccount> beanToCsv =
+                    new StatefulBeanToCsvBuilder<ProcessedAccount>(writer)
                             .build();
             beanToCsv.write(processed);
             writer.flush();
