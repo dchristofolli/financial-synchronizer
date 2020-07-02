@@ -18,7 +18,7 @@ public class ContaCorrenteEnviada {
     }
 
     public double getSaldo() {
-        return saldo;
+        return saldo/100;
     }
 
     public String getStatus() {

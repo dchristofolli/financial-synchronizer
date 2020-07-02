@@ -10,7 +10,7 @@ public class ContaCorrenteProcessada {
     public ContaCorrenteProcessada(String agencia, String conta, double saldo, String status, boolean update) {
         this.agencia = agencia;
         this.conta = conta;
-        this.saldo = saldo/100;
+        this.saldo = saldo;
         this.status = status;
         this.update = update;
     }
