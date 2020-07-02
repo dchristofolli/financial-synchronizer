@@ -19,6 +19,7 @@ import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Objects;
 
@@ -73,9 +74,13 @@ public class CsvService {
         return new ContaCorrenteProcessada(
                 account.getAgencia(),
                 account.getConta(),
-                account.getSaldo(),
+                balanceFormatter(account),
                 account.getStatus(),
                 update);
+    }
+
+    private String balanceFormatter(ContaCorrenteEnviada account) {
+        return String.format("%.2f",account.getSaldo()).replace('.', ',');
     }
 
     public void makeDirectory() {
